@@ -44,6 +44,11 @@ Given student lifestyle data (sleep duration, stress level, physical activity le
 └── README.md
 ```
 
+## Results
+
+- **Private score:** 0.95011
+- **Public score:** 0.95291 — Rank 870/3355 (Top 26%)
+
 ## Tech Stack
 
 Python, Pandas, NumPy, scikit-learn, XGBoost, CatBoost
