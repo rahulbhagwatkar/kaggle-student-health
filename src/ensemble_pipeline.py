@@ -1,14 +1,20 @@
 import pandas as pd
 import numpy as np
+from pathlib import Path
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import balanced_accuracy_score
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.class_weight import compute_sample_weight
 from xgboost import XGBClassifier
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATA_DIR = PROJECT_ROOT / "data"
+SUBMISSIONS_DIR = PROJECT_ROOT / "submissions"
+SUBMISSIONS_DIR.mkdir(exist_ok=True)
+
 # 1. LOAD AND MERGE
-train = pd.read_csv("train.csv")
-test = pd.read_csv("test.csv")
+train = pd.read_csv(DATA_DIR / "train.csv")
+test = pd.read_csv(DATA_DIR / "test.csv")
 # original = pd.read_csv("student_health_dataset_50k.csv") # Uncomment if you downloaded it
 
 train['dataset_source'] = 'train'
@@ -86,15 +92,15 @@ final_preds_encoded = np.argmax(test_probs_avg, axis=1)
 # 7. Decode back to text labels ('fit', 'at-risk', 'unhealthy')
 final_preds_labels = le.inverse_transform(final_preds_encoded)
 
-print("Generating seed_blended_submission.csv...")
+print("Generating blended_submission.csv...")
 # 8. Format the final Kaggle submission
 submission = pd.DataFrame({
     'id': test['id'],
     'health_condition': final_preds_labels
 })
 
-submission.to_csv('seed_blended_submission.csv', index=False)
-print("SUCCESS: seed_blended_submission.csv is ready. Go upload it.")
+submission.to_csv(SUBMISSIONS_DIR / "blended_submission.csv", index=False)
+print("SUCCESS: blended_submission.csv is ready. Go upload it.")
 
 # 4. STRATIFIED K-FOLD VALIDATION
 N_SPLITS = 3

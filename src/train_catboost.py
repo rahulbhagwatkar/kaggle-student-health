@@ -1,13 +1,19 @@
 import pandas as pd
 import numpy as np
+from pathlib import Path
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.class_weight import compute_sample_weight
 from xgboost import XGBClassifier
 from catboost import CatBoostClassifier
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATA_DIR = PROJECT_ROOT / "data"
+SUBMISSIONS_DIR = PROJECT_ROOT / "submissions"
+SUBMISSIONS_DIR.mkdir(exist_ok=True)
+
 print("Loading data...")
-train = pd.read_csv("train.csv")
-test = pd.read_csv("test.csv")
+train = pd.read_csv(DATA_DIR / "train.csv")
+test = pd.read_csv(DATA_DIR / "test.csv")
 
 train['dataset_source'] = 'train'
 test['dataset_source'] = 'test'
@@ -111,7 +117,7 @@ submission = pd.DataFrame({
     'health_condition': final_preds_labels
 })
 
-submission.to_csv('final_ensemble_submission.csv', index=False)
+submission.to_csv(SUBMISSIONS_DIR / "final_ensemble_submission.csv", index=False)
 print("SUCCESS: final_ensemble_submission.csv is ready.")
 
 print("-" * 30)
@@ -119,7 +125,7 @@ print("Initiating Frankenstein Blend...")
 
 # 1. Load the Grandmaster's CSV 
 # (Ensure you renamed his file to exactly this and placed it in your folder)
-public_sub = pd.read_csv("yw8837_submission.csv")
+public_sub = pd.read_csv(DATA_DIR / "yw8837_submission.csv")
 
 # 2. Extract our ensemble's maximum confidence for each row
 # 'test_probs_avg' is already in memory from your previous ensemble block
@@ -147,5 +153,5 @@ submission = pd.DataFrame({
     'health_condition': frank_labels
 })
 
-submission.to_csv('frankenstein_submission.csv', index=False)
-print("SUCCESS: frankenstein_submission.csv is ready. Go upload it.")
+submission.to_csv(SUBMISSIONS_DIR / "blended_submission.csv", index=False)
+print("SUCCESS: blended_submission.csv is ready. Go upload it.")
